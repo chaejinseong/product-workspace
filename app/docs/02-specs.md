@@ -17,6 +17,8 @@
 Exact commands, with flags — an agent can't guess these, so keep this
 section accurate and update it when a command changes.
 
+> CI (`.github/workflows/ci.yml`) runs these same commands — change both together.
+
 - Install: `TODO`
 - Dev server: `TODO`
 - Test (all): `TODO`

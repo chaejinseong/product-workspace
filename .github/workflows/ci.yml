@@ -1,0 +1,38 @@
+# CI for this workspace. Fill in the TODO-CI steps with the exact
+# commands from app/docs/02-specs.md (## Commands) — keep the two in sync.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest        # match the project (e.g. macos-latest for a macOS app)
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1) Fails while the template is unfilled, so CI never shows a fake ✅.
+      - name: Guard — commands filled in?
+        run: |
+          if grep -q "TODO-CI" ../.github/workflows/ci.yml; then
+            echo "Fill in the CI commands from app/docs/02-specs.md"; exit 1
+          fi
+
+      # 2) Toolchain — keep the one(s) you need, uncomment.
+      # - uses: actions/setup-node@v4
+      #   with: { node-version: 20 }
+      # - uses: actions/setup-java@v4
+      #   with: { distribution: temurin, java-version: 21 }
+      # - uses: actions/setup-python@v5
+      #   with: { python-version: "3.12" }
+      # - uses: dtolnay/rust-toolchain@stable
+
+      # 3) Same commands as app/docs/02-specs.md → ## Commands
+      - run: echo TODO-CI install    # Install
+      - run: echo TODO-CI lint       # Lint / typecheck
+      - run: echo TODO-CI test       # Test (all)
+      - run: echo TODO-CI build      # Build

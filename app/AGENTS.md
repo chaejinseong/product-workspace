@@ -30,6 +30,8 @@ there before assuming these apply unmodified.
 - Creating or editing files within the task's scope
 - Installing dependencies already declared in the lockfile
 - Local git commits and local branches
+- Pushing your own task branch (never `main`) and opening a PR for it,
+  once its spec is `Reviewed`
 - Implementing a spec whose status is `Approved`
 
 **Ask first**
@@ -37,7 +39,7 @@ there before assuming these apply unmodified.
   names it)
 - Schema changes or running a migration (unless the approved spec
   names it)
-- Pushing to a remote/shared branch, or opening a PR
+- Pushing to `main` or to a branch someone else is working on
 - Changing CI/CD configuration
 - Deleting or bulk-moving files outside the task's scope
 - Any API call that costs money or has a real external side effect
@@ -49,22 +51,31 @@ there before assuming these apply unmodified.
 - Editing `.env`, secrets, or credential/auth files
 - Operating directly on production data or a production database
 - Deleting tests, or marking failing tests as skipped, to make a run pass
-- Marking a spec `Approved` yourself
+- Marking a spec `Approved` or `Verified` yourself
+- Merging a PR, or committing directly to `main`
 
 ## Before you implement anything beyond a trivial fix
 
 The person should see the plan before code gets written. In this
 workspace the plan is a spec in `docs/specs/`.
 
-- **Trivial** (a typo, a one-line log statement, a fix you could describe
-  in one sentence): just make it, no spec needed. Still log it in a
-  report if it's committed.
+Size decides the paperwork. Every size still goes through a branch, a PR
+and CI.
+
+| Size | Example | Spec | Report | Local review |
+|---|---|---|---|---|
+| **Trivial** | typo, one log line, a fix you can describe in one sentence | none | none — the PR's 구현 요약 is the record | none |
+| **Small** | clear-cut bug fix, review-suggestion follow-up; ≤ 3 files, no new behavior | none — a `docs/todo/` item states the goal + "Done when" (it stands in for the spec) | short: Summary + Verified only | 1 round |
+| **Large** | new feature, behavior change, anything unclear or > 3 files | full spec, `Approved` by the human | full | full (max 2 rounds) |
+
+Not sure which size? Treat it as the larger one.
+
 - **Spec is `Approved`**: that *is* the approval. Implement it without
   re-posting a plan. If you find you must deviate from it (a file it
   didn't list, a different approach), stop, add a `docs/todo/` item
   explaining why, and wait.
-- **No spec yet** (a new feature, a behavior change, a non-trivial fix):
-  don't write code. Draft a spec from `docs/specs/_template.md` with
+- **Large, no spec yet** (a new feature, a behavior change, anything
+  unclear): don't write code. Draft a spec from `docs/specs/_template.md` with
   status `Draft`, add it to `docs/specs/00-index.md`, and wait for the
   human to approve it. Implement in a fresh session so the work isn't
   cluttered by the back-and-forth that produced the spec.
@@ -87,6 +98,8 @@ workspace the plan is a spec in `docs/specs/`.
 - Commit messages: Conventional Commits with `app` scope (`feat(app):`,
   `fix(app):`, `refactor(app):`, `test(app):`, `docs(app):`), report path
   on the last line of the body.
+- Fixing a bug that slipped past review (caught by CI, the Human check,
+  or after merge)? Add a row to `docs/escaped-bugs.md`.
 
 ## When you finish
 
@@ -101,6 +114,19 @@ workspace the plan is a spec in `docs/specs/`.
 4. Update `01-folder-architecture.md` or `02-specs.md` ONLY if the change
    actually altered structure, stack, or constraints. Don't pad these
    files "just in case."
+5. Commit everything, then stop and hand off for review — don't push yet
+   (see "Reviewing").
+6. End with this summary as your last message, in Korean:
+
+   ```
+   ## 구현 요약
+   - 스펙: app/docs/specs/<file>.md · 브랜치: <branch>
+   - 방식: 핵심 접근 2~3줄 (고른 이유, 버린 대안)
+   - 바뀐 파일: `path` — 무엇을 왜 (파일당 한 줄)
+   - 검증: `명령` → 결과 / 못 한 검증은 그렇다고 명시
+   - 스펙과 달라진 점: 없음 | 내용
+   - 남은 일 / Human check 할 것: …
+   ```
 
 ## Work log
 
@@ -119,20 +145,54 @@ The report is what git can't record: why each file changed and how.
 
 ## Reviewing
 
-Default reviewer is Claude (see the root `AGENTS.md`).
+The reviewer is set by `Mode` in the root `AGENTS.md` (or the spec's
+`Reviewer:` field). Review happens locally, before anything is pushed.
 
-1. Read the spec, then the report — not the raw diff first.
-2. Compare each file's stated Purpose/Method with `git diff` for the
-   listed commits. A mismatch between what the report says and what the
-   code does is the first thing to flag.
-3. Check the spec's "Done when" items and re-run its commands.
-4. Write findings in the report's `## Review` section, each tagged
-   `must-fix` or `suggestion`.
-5. The implementer fixes `must-fix` items and notes each as resolved.
-   After two review rounds with `must-fix` items still open, stop and hand
-   it to the human instead of looping — it saves usage and usually means
-   the spec was unclear.
-6. When nothing `must-fix` is open, set the spec to `Reviewed`.
+### Handoff protocol (implementer ⇄ reviewer)
+
+1. **Implementer finishes first.** All Automated "Done when" checks pass,
+   everything is committed, the report is written, the spec is
+   `Implemented`. Then stop — no more edits on the branch until the
+   review round is complete.
+2. **Reviewer only reviews.** Read, re-run checks, write findings in the
+   report's `## Review`. Never edit code, tests or the spec.
+3. **Fix only after the review round is complete, and only what it asked.**
+   Every `must-fix` gets fixed; each `suggestion` is accepted or declined
+   with a reason. Anything else found along the way → `docs/todo/`, not
+   this branch.
+4. Repeat 1–3. After two rounds with `must-fix` still open, stop and hand
+   it to the human — it saves usage and usually means the spec was unclear.
+
+### How to review
+
+1. Use a new session — never the one that wrote the code or the spec.
+2. Read the spec, then the report — not the raw diff first.
+3. Compare each file's stated Purpose/Method with `git diff main...HEAD`.
+   A mismatch between what the report says and what the code does is the
+   first thing to flag.
+4. Re-run the spec's Automated "Done when" commands.
+5. Write findings in the report's `## Review`, each tagged `must-fix`
+   (affects correctness or the spec's requirements) or `suggestion`
+   (everything else). Don't invent findings to have some.
+6. End with this summary as your last message, in Korean:
+
+   ```
+   ## 리뷰 결과 (라운드 N)
+   - 결론: must-fix N · suggestion N → 수정 필요 | Reviewed
+   - [must-fix] `path` `symbol` — 문제와 이유 (한 줄)
+   - [suggestion] `path` `symbol` — 제안 (한 줄)
+   - 다시 돌린 검증: `명령` → 결과
+   ```
+
+### After `Reviewed`
+
+1. The reviewer sets the spec to `Reviewed` and commits on the branch.
+2. The implementer pushes the branch and opens a PR (`gh pr create`); the
+   description follows `.github/pull_request_template.md`. Add the PR
+   link to the report.
+3. CI fails → the implementer fixes it on the branch, and the reviewer
+   checks just that fix.
+4. The human runs the Human check, sets `Verified`, and merges.
 
 ## Monorepos / multiple projects in one repo
 

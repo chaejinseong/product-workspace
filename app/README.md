@@ -20,7 +20,7 @@ docs/
   03-product-plan.md             purpose, scope, requirements (links source PRDs)
   specs/
     00-index.md                  index of implementation specs + status
-    _template.md                 format for a spec (the Claude → Codex handoff)
+    _template.md                 format for a spec (spec writer → implementer handoff)
   todo/
     00-todo-list.md              index of open/deferred work
     _template.md                 format for a new todo item

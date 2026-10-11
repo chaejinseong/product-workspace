@@ -1,9 +1,10 @@
 # <short-title>
 
-- Status: Draft | Approved | Implemented | Reviewed | Shelved
+- Status: Draft | Approved | Implemented | Reviewed | Verified | Shelved
 - Created: YYYY-MM-DD
 - Author: claude | <name>
-- Implementer: codex | claude | <name>
+- Implementer: codex | claude | <name> (default: Mode in the root AGENTS.md)
+- Reviewer: claude | codex | <name> (default: Mode in the root AGENTS.md)
 - Source PRD: planning/docs/prd/<file>.md (or "none — <why>")
 - Reports: app/docs/reports/<file>.md (filled in by the implementer)
 
@@ -43,9 +44,13 @@ obvious alternative you're ruling out, say which and why.
 
 ## Done when
 
+### Automated (implementer runs, CI re-runs)
 - [ ] `<exact test command from app/docs/02-specs.md>` passes
 - [ ] `<build / lint command>` passes
-- [ ] (any behavior to check by hand, stated concretely)
+
+### Human check (required for `Verified`)
+- [ ] (run the app and check this behavior — concrete steps and expected result)
+  Write "none — <why>" only if nothing can be checked by running it.
 
 ## Open questions
 

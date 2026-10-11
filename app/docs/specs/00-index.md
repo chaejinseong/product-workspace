@@ -3,12 +3,13 @@
 One line per spec. Full detail lives in each file. Update the status as
 work moves — don't delete rows for finished or shelved specs.
 
-Status flow: `Draft` → `Approved` (human only) → `Implemented`
-(implementer) → `Reviewed` (reviewer). `Shelved` at any point.
+Status flow: `Draft` → `Approved` (human) → `Implemented` (implementer)
+→ `Reviewed` (reviewer) → `Verified` (human, after the Human check).
+`Shelved` at any point.
 
-| File | Status | Implementer | Source PRD | Summary |
-|---|---|---|---|---|
-| _(example) 260219-1956-01-login-token-refresh.md_ | Approved | codex | planning/docs/prd/login.md | Refresh expired token once before logging out |
+| File | Status | Implementer | Reviewer | Source PRD | Summary |
+|---|---|---|---|---|---|
+| _(example) 260219-1956-01-login-token-refresh.md_ | Approved | codex | claude | planning/docs/prd/login.md | Refresh expired token once before logging out |
 
 ## How to add a spec
 

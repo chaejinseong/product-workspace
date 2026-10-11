@@ -4,6 +4,7 @@
 - Agent: codex | claude | <name>
 - Spec: app/docs/specs/<file>.md (or "none — trivial fix")
 - Commits: <hash>, <hash>
+- PR: <url> (added after `Reviewed`)
 
 ## Summary
 
@@ -31,11 +32,14 @@ verified, say so.
 
 ## Review
 
-- Reviewer: claude | codex | <name>
+Written by the reviewer before any push (see `app/AGENTS.md` → "Reviewing").
+
+- Reviewer: claude | codex | <name> (new session)
 - Round 1:
-  - [must-fix] ... → resolved in <hash>
-  - [suggestion] ... → accepted / declined (why)
-- Result: approved | changes requested
+  - [must-fix] `path` `symbol` — ... → resolved in <hash>
+  - [suggestion] `path` `symbol` — ... → accepted / declined (why)
+- Re-run: `<command>` → <result>
+- Result: changes requested | Reviewed
 
 ## Follow-ups
 
